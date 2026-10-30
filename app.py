@@ -100,7 +100,7 @@ tab1, tab2, tab3 = st.tabs(["🔍 실시간 탐지", "📊 모델 성능 리포�
 # TAB 1: 실시간 분석
 with tab1:
     st.subheader("문장 실시간 유해성 분석")
-    user_text = st.text_area("분석할 문장을 입력하세요.", placeholder="예: 안녕하세요, 이벤트에 참여하세요!", height=120)
+    user_text = st.text_area("분석할 문장을 입력하세요.", placeholder="예: 안녕하세요, 오늘 하루도 잘 부탁드립니다!", height=120)
     
     if st.button("분석 실행", type="primary", use_container_width=True):
         if not user_text.strip():
@@ -125,16 +125,16 @@ with tab1:
                 
             col1, col2 = st.columns(2)
             with col1:
-                st.metric("문자 모델 유해 확률", f"{char_prob * 100:.2f}%")
+                st.metric("비속어, 유해 언어 모델 유해 확률", f"{char_prob * 100:.2f}%")
                 st.progress(char_prob)
             with col2:
-                st.metric("단어 모델 유해 확률", f"{word_prob * 100:.2f}%")
+                st.metric("스팸, 피싱 모델 유해 확률", f"{word_prob * 100:.2f}%")
                 st.progress(word_prob)
 
             # 기여도 차트 시각화
             word_df = build_feature_dataframe(word_vectorizer, word_model, word_vec)
             if not word_df.empty:
-                st.markdown("#### 📌 단어 모델 판정 기여 요소 Top 5")
+                st.markdown("#### 📌 스펨, 광고 모델 판정 기여 요소 Top 5")
                 top_features = word_df.sort_values(by="기여 점수", ascending=False).head(5)
                 fig = px.bar(top_features, x="기여 점수", y="특징", orientation='h', color="기여 점수",
                              color_continuous_scale="Reds", title="유해 영향력 단어 Top 5")
@@ -143,13 +143,13 @@ with tab1:
 # TAB 2: 모델 평가 리포트
 with tab2:
     st.subheader("Linear SVM 모델 평가 결과")
-    st.info("학습 완료된 문자(Char) 및 단어(Word) SVM 모델의 성과 지표입니다.")
+    st.info("학습 완료된 비속어, 유해 단어(Char) 및 스팸, 피싱(Word) SVM 모델의 성과 지표입니다.")
     
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("문자 모델 정확도", "98.71%")
-    m2.metric("단어 모델 정확도", "98.30%")
-    m3.metric("문자 모델 F1-Score", "0.99")
-    m4.metric("단어 모델 F1-Score", "0.98")
+    m1.metric("비속어, 유해 단어 모델 정확도", "98.71%")
+    m2.metric("스팸, 피싱 모델 정확도", "98.30%")
+    m3.metric("비속어, 유해 단어 모델 F1-Score", "0.99")
+    m4.metric("스팸, 피싱 모델 F1-Score", "0.98")
     
     col_a, col_b = st.columns(2)
     with col_a:
@@ -166,7 +166,7 @@ with tab2:
     with col_b:
         st.markdown("**학습 데이터셋 구성 비율**")
         dataset_df = pd.DataFrame({
-            'Dataset': ['Dataset1 (욕설/비하)', 'Dataset2 (추가 데이터)', 'Dataset3 (피싱/스팸)'],
+            'Dataset': ['Dataset1 (욕설/비하)', 'Dataset2 (우회표현)', 'Dataset3 (피싱/스팸)'],
             'Count': [200000, 11010, 13447]
         })
         fig_pie = px.pie(dataset_df, values='Count', names='Dataset', hole=0.4)
